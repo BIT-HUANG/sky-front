@@ -1,0 +1,3 @@
+<template>
+    Query Issue
+</template>
