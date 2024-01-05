@@ -63,12 +63,25 @@
                 </tr>
             </thead>
             <tbody>
-                <tr :class="{'error': item.error}" v-for="item in serviceList" :key="item.key">
+                <tr :class="{'compare': item.compare}" v-for="item in serviceList" :key="item.key">
                     <td>{{ item.service }}</td>
-                    <td v-for="env in environment" class="text-left">
+                    <td :class="{'compare': item[env + '_result']}" v-for="env in environment" class="text-left">
                         {{ item[env] }}
                     </td>
-                    <td v-show="tcmSwitch">{{ item.TCM }}</td>
+                    <td v-show="tcmSwitch">
+                        {{ item.TCM }}
+                        <v-menu v-if="item.TCM">
+                            <template v-slot:activator="{ props }">
+                                <v-icon class="float-right" icon="mdi-dots-vertical" v-bind="props"></v-icon>
+                            </template>
+                            <v-btn block style="height: 48px;" @click="deployServiceByTcm(item.service, 'qa', item.TCM)">
+                                Deploy To QA
+                            </v-btn>
+                            <v-btn block style="height: 48px;" @click="deployServiceByTcm(item.service, 'uat', item.TCM)">
+                                Deploy To UAT
+                            </v-btn>
+                        </v-menu>
+                    </td>
                 </tr>
             </tbody>
         </v-table>
@@ -152,6 +165,28 @@ async function getTcmPages() {
     console.log(tcmPageList.value)
 }
 
+async function deployServiceByTcm(service : string, environment: string, tag: string) {
+    message.value = 'Deploying ...'
+    snackbar.value = true
+    var deployInfo = {
+        "service":service,
+        "environment": environment,
+        "tag": tag
+    }
+    var deployList = []
+    deployList.push(deployInfo)
+    var body = {"deploy_list": deployList}
+    const response = await fetch(square_base_url + '/skysquare/qa_tools/environment_compare/deploy-service', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+        },
+    })
+    var res = await response.json()
+    message.value = res.message
+    snackbar.value = true
+}
 onMounted(async () => { // Use an async function so that you can await the fetch operation   
     await getTcmPages()
 })   
@@ -159,7 +194,7 @@ onMounted(async () => { // Use an async function so that you can await the fetch
 </script>
 
 <style scoped>
-.error {
-    background-color: red;
+.compare {
+    background-color: rgba(255, 136, 0, 0.582);
 }
 </style>

@@ -66,6 +66,16 @@ const routes = [
           path: '/square/qa-tools/qa-reports/jenkins-report-ui',
           name: 'Jenkins Report UI',
           component: () => import('@/views/qa-tools/qa-reports/jenkins-report-ui.vue'),
+        },
+        {
+          path: '/square/qa-tools/qa-reports/jenkins-report-api',
+          name: 'Jenkins Report API',
+          component: () => import('@/views/qa-tools/qa-reports/jenkins-report-api.vue'),
+        },
+        {
+          path: '/square/ai-tools/wenxin/llama213b',
+          name: '文心一言Llama213B',
+          component: () => import('@/views/ai-tools/wenxin/wenxin-chat.vue'),
         }
         ]
       },
